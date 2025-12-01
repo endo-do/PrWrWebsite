@@ -1,0 +1,110 @@
+import { Link, useParams } from 'react-router-dom';
+import {
+  games,
+  getGameMetrics,
+  timelineEvents,
+} from '../data/games';
+import { TrendChart } from '../components/TrendChart';
+import { Timeline } from '../components/Timeline';
+import { SkinMarketTable } from '../components/SkinMarketTable';
+
+export const GameDetail = () => {
+  const { gameId = '' } = useParams();
+  const game = games.find((item) => item.id === gameId);
+
+  if (!game) {
+    return (
+      <div className="space-y-4 text-white">
+        <p>Unknown game.</p>
+        <Link to="/" className="text-neon underline">
+          Return to dashboard
+        </Link>
+      </div>
+    );
+  }
+
+  const metrics = getGameMetrics(game.id);
+  const events = timelineEvents.filter((event) => event.gameId === game.id);
+
+  return (
+    <div className="space-y-10">
+      <section
+        className="rounded-3xl border border-white/10 p-8 text-white shadow-2xl"
+        style={{
+          background: `radial-gradient(circle at top, ${game.palette.primary}22, #020617 65%)`,
+        }}
+      >
+        <Link to="/" className="text-sm text-white/70 hover:text-white">
+          ← Back to dashboard
+        </Link>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="text-4xl">{game.icon}</p>
+            <h1 className="font-display text-4xl text-white">{game.name}</h1>
+            <p className="text-lg text-white/70">{game.heroTagline}</p>
+          </div>
+          <div className="rounded-2xl border border-white/20 bg-white/10 px-4 py-2 text-sm text-white/70">
+            Developed by {game.studio}
+          </div>
+        </div>
+        <p className="mt-4 max-w-3xl text-white/70">{game.description}</p>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-2">
+        {metrics.map((metric) => {
+          const first = metric.values[0]?.value ?? 0;
+          const last = metric.values.at(-1)?.value ?? 0;
+          const delta = first ? ((last - first) / first) * 100 : 0;
+          return (
+            <article
+              key={metric.id}
+              className="rounded-2xl border border-white/5 bg-slate-900/70 p-4 text-white"
+            >
+              <p className="text-xs uppercase tracking-[0.4em] text-white/40">{metric.category}</p>
+              <h3 className="font-display text-2xl">{metric.label}</h3>
+              <p className="text-sm text-white/70">{metric.description}</p>
+              <div className="mt-4 flex items-end justify-between">
+                <div>
+                  <p className="text-sm text-white/60">Latest (2025)</p>
+                  <p className="text-3xl font-semibold">
+                    {metric.unit === 'USD' ? '$' : ''}
+                    {last.toLocaleString()}
+                    {metric.unit !== 'USD' ? ` ${metric.unit}` : ''}
+                  </p>
+                </div>
+                <p className={`text-sm font-semibold ${delta >= 0 ? 'text-rose-300' : 'text-emerald-300'}`}>
+                  {delta >= 0 ? '+' : ''}
+                  {delta.toFixed(1)}% since 2016
+                </p>
+              </div>
+            </article>
+          );
+        })}
+      </section>
+
+      <div className="space-y-6">
+        {metrics.map((metric) => (
+          <TrendChart
+            key={metric.id}
+            title={metric.label}
+            subtitle={metric.description}
+            unit={metric.unit}
+            data={metric.values.map(({ year, value }) => ({ year, value }))}
+            lines={[
+              {
+                id: 'value',
+                color: game.palette.secondary,
+                name: metric.label,
+              },
+            ]}
+          />
+        ))}
+      </div>
+
+      {game.id === 'cs2' && <SkinMarketTable />}
+
+      {events.length > 0 && <Timeline events={events} title="Key progression beats" />}
+    </div>
+  );
+};
+
