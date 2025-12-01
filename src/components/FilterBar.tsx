@@ -85,13 +85,13 @@ export const FilterBar = ({
           </select>
         </div>
 
-        <div className="flex flex-1 flex-col gap-2 min-w-[240px]">
+        <div className="flex flex-1 flex-col gap-2 min-w-[320px]">
           <label className="text-xs uppercase tracking-wide text-slate-500 dark:text-white/60">
             Year range
           </label>
-          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-white/70">
-            <span className="shrink-0 whitespace-nowrap text-sm font-semibold">{yearRange[0]}</span>
-            <div className="min-w-[120px] max-w-[220px] flex-1">
+          <div className="flex flex-nowrap items-center gap-2 text-xs text-slate-600 dark:text-white/70 overflow-hidden">
+            <span className="shrink-0 whitespace-nowrap text-sm font-semibold w-[3.5rem] text-right">{yearRange[0]}</span>
+            <div className="min-w-[100px] flex-1">
               <input
                 type="range"
                 min={bounds.min}
@@ -101,7 +101,7 @@ export const FilterBar = ({
                 className="w-full accent-neon"
               />
             </div>
-            <div className="min-w-[120px] max-w-[220px] flex-1">
+            <div className="min-w-[100px] flex-1">
               <input
                 type="range"
                 min={bounds.min}
@@ -111,7 +111,7 @@ export const FilterBar = ({
                 className="w-full accent-amber"
               />
             </div>
-            <span className="shrink-0 whitespace-nowrap text-sm font-semibold">{yearRange[1]}</span>
+            <span className="shrink-0 whitespace-nowrap text-sm font-semibold w-[3.5rem]">{yearRange[1]}</span>
           </div>
         </div>
       </div>

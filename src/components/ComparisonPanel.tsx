@@ -54,7 +54,7 @@ export const ComparisonPanel = () => (
       >
         Open comparison lab →
       </Link>
-      <span>Methodology: normalized % change of tracked metrics per game.</span>
+      <span className="flex items-center">Methodology: normalized % change of tracked metrics per game.</span>
     </div>
   </section>
 );
