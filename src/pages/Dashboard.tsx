@@ -30,14 +30,33 @@ export const Dashboard = () => {
     return years;
   }, [selectedGames, metricFocus, yearRange]);
 
-  const lineDefs = selectedGames.map((gameId) => {
-    const game = games.find((g) => g.id === gameId)!;
-    return {
-      id: gameId,
-      color: game.palette.primary,
-      name: game.name,
-    };
-  });
+  const gamesWithData = useMemo(() => {
+    return games
+      .filter((game) => {
+        const metric = metrics.find(
+          (candidate) => candidate.gameId === game.id && candidate.category === metricFocus,
+        );
+        if (!metric) return false;
+        // Check if there's at least one data point in the year range
+        return metric.values.some(
+          (val) => val.year >= yearRange[0] && val.year <= yearRange[1] && val.value != null,
+        );
+      })
+      .map((game) => game.id);
+  }, [metricFocus, yearRange]);
+
+  const lineDefs = useMemo(() => {
+    return selectedGames
+      .filter((gameId) => gamesWithData.includes(gameId))
+      .map((gameId) => {
+        const game = games.find((g) => g.id === gameId)!;
+        return {
+          id: gameId,
+          color: game.palette.primary,
+          name: game.name,
+        };
+      });
+  }, [selectedGames, gamesWithData]);
 
   return (
     <div className="space-y-10">
@@ -62,6 +81,7 @@ export const Dashboard = () => {
         metricOptions={metricCategories}
         yearRange={yearRange}
         bounds={{ min, max }}
+        gamesWithData={gamesWithData}
         onGamesChange={setSelectedGames}
         onMetricChange={setMetricFocus}
         onYearRangeChange={setYearRange}

@@ -7,6 +7,7 @@ interface FilterBarProps {
   metricOptions: MetricCategory[];
   yearRange: [number, number];
   bounds: { min: number; max: number };
+  gamesWithData: string[];
   onGamesChange: (ids: string[]) => void;
   onMetricChange: (metric: MetricCategory) => void;
   onYearRangeChange: (range: [number, number]) => void;
@@ -19,6 +20,7 @@ export const FilterBar = ({
   metricOptions,
   yearRange,
   bounds,
+  gamesWithData,
   onGamesChange,
   onMetricChange,
   onYearRangeChange,
@@ -48,15 +50,19 @@ export const FilterBar = ({
           <div className="flex flex-wrap gap-2">
             {games.map((game) => {
               const active = selectedGames.includes(game.id);
-                  return (
+              const hasData = gamesWithData.includes(game.id);
+              return (
                 <button
                   key={game.id}
                   type="button"
                   onClick={() => handleGameToggle(game.id)}
+                  disabled={!hasData}
                   className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
-                    active
-                      ? 'bg-neon/20 text-neon ring-1 ring-neon/40'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10'
+                    !hasData
+                      ? 'cursor-not-allowed opacity-40 bg-slate-100 text-slate-400 dark:bg-white/5 dark:text-white/30'
+                      : active
+                        ? 'bg-neon/20 text-neon ring-1 ring-neon/40'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10'
                   }`}
                 >
                   {game.name}
