@@ -22,11 +22,15 @@ interface TrendChartProps {
 }
 
 export const TrendChart = ({ title, subtitle, unit, data, lines }: TrendChartProps) => (
-  <section className="rounded-3xl border border-white/5 bg-slate-900/60 p-6 shadow-glow-lg">
+  <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl dark:border-white/5 dark:bg-slate-900/60 dark:shadow-glow-lg">
     <header className="mb-4 space-y-1">
-      <p className="text-xs uppercase tracking-wide text-white/50">Interactive chart</p>
-      <h3 className="font-display text-2xl text-white">{title}</h3>
-      {subtitle && <p className="text-sm text-white/70">{subtitle}</p>}
+      <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-white/50">
+        Interactive chart
+      </p>
+      <h3 className="font-display text-2xl text-slate-900 dark:text-white">{title}</h3>
+      {subtitle && (
+        <p className="text-sm text-slate-600 dark:text-white/70">{subtitle}</p>
+      )}
     </header>
 
     <div className="h-80 w-full">

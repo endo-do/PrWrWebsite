@@ -41,8 +41,8 @@ export const Dashboard = () => {
 
   return (
     <div className="space-y-10">
-      <section className="rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-950 to-midnight p-8 text-white shadow-2xl shadow-black/40">
-        <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+      <section className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-slate-100 p-8 text-slate-900 shadow-2xl shadow-slate-200/80 dark:border-white/10 dark:from-slate-900 dark:via-slate-950 dark:to-midnight dark:text-white dark:shadow-black/40">
+        <p className="text-xs uppercase tracking-[0.4em] text-slate-600 dark:text-white/60">
           Progression difficulty tracker
         </p>
         <h1 className="mt-3 font-display text-4xl md:text-5xl">

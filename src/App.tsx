@@ -14,12 +14,14 @@ function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
-        <div className="min-h-screen bg-slate-950 text-white">
+        <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-white">
           <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8 md:py-12">
             <header className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.4em] text-white/50">Pulse Report</p>
-                <h1 className="font-display text-2xl">Progression Radar</h1>
+                <p className="text-xs uppercase tracking-[0.4em] text-slate-500 dark:text-white/50">
+                  Pulse Report
+                </p>
+                <h1 className="font-display text-2xl text-slate-900 dark:text-white">Progression Radar</h1>
               </div>
               <nav className="flex items-center gap-4">
                 {navItems.map((item) => (
@@ -28,7 +30,9 @@ function App() {
                     to={item.to}
                     className={({ isActive }) =>
                       `rounded-full px-4 py-2 text-sm font-semibold transition ${
-                        isActive ? 'bg-neon/20 text-neon' : 'text-white/70 hover:text-white'
+                        isActive
+                          ? 'bg-neon/20 text-neon'
+                          : 'text-slate-700 hover:text-slate-900 dark:text-white/70 dark:hover:text-white'
                       }`
                     }
                   >

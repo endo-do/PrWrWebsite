@@ -32,12 +32,12 @@ export const GameCard = ({ game, metric, accent }: GameCardProps) => {
   const delta = first ? ((last - first) / first) * 100 : 0;
 
   return (
-    <article className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900/70 to-slate-900/30 p-6 shadow-xl shadow-black/30">
+    <article className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60 dark:border-white/10 dark:bg-gradient-to-br dark:from-slate-900/70 dark:to-slate-900/30 dark:shadow-black/30">
       <header className="flex items-start justify-between gap-4">
         <div>
           <p className="text-2xl">{game.icon}</p>
-          <h3 className="font-display text-xl text-white">{game.name}</h3>
-          <p className="text-sm text-white/70">{game.heroTagline}</p>
+          <h3 className="font-display text-xl text-slate-900 dark:text-white">{game.name}</h3>
+          <p className="text-sm text-slate-600 dark:text-white/70">{game.heroTagline}</p>
         </div>
         <div
           className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
@@ -76,7 +76,7 @@ export const GameCard = ({ game, metric, accent }: GameCardProps) => {
         <p className="text-sm text-white/60">No metric data available.</p>
       )}
 
-      <ul className="space-y-2 text-sm text-white/70">
+      <ul className="space-y-2 text-sm text-slate-600 dark:text-white/70">
         {game.highlights.map((highlight) => (
           <li key={highlight} className="flex items-start gap-2">
             <span className="mt-1 h-2 w-2 rounded-full" style={{ backgroundColor: accent }} />
@@ -87,7 +87,7 @@ export const GameCard = ({ game, metric, accent }: GameCardProps) => {
 
       <Link
         to={`/games/${game.id}`}
-        className="inline-flex items-center justify-center rounded-2xl bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+        className="inline-flex items-center justify-center rounded-2xl bg-slate-900/5 px-4 py-2 text-sm font-semibold text-slate-800 transition hover:bg-slate-900/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
       >
         Dive into {game.name}
       </Link>
