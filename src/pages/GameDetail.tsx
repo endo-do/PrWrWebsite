@@ -50,7 +50,17 @@ export const GameDetail = () => {
             Developed by {game.studio}
           </div>
         </div>
-        <p className="mt-4 max-w-3xl text-slate-600 dark:text-white/70">{game.description}</p>
+        {/* Game description section */}
+        <div className="mt-6 max-w-3xl space-y-6">
+          <div>
+            <h2 className="mb-2 font-display text-xl text-slate-900 dark:text-white">About</h2>
+            <p className="text-base leading-relaxed text-slate-600 dark:text-white/70">{game.description}</p>
+          </div>
+          <div>
+            <h2 className="mb-2 font-display text-xl text-slate-900 dark:text-white">How it works</h2>
+            <p className="text-base leading-relaxed text-slate-600 dark:text-white/70">{game.howItWorks}</p>
+          </div>
+        </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-2">

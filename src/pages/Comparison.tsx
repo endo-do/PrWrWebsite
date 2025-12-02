@@ -8,12 +8,19 @@ import {
 } from '../data/games';
 import { TrendChart } from '../components/TrendChart';
 
+/**
+ * Labels for metric categories used in the comparison table.
+ */
 const categoryLabels: Record<string, string> = {
   money: 'Money',
   hours: 'Hours',
   difficulty: 'Difficulty',
 };
 
+/**
+ * Calculates the percentage change from the first value to the last value.
+ * Used to show how much a metric has changed over time.
+ */
 const toPercentChange = (values: { value: number }[]) => {
   const first = values[0]?.value ?? 0;
   const last = values.at(-1)?.value ?? 0;
@@ -21,21 +28,38 @@ const toPercentChange = (values: { value: number }[]) => {
   return ((last - first) / first) * 100;
 };
 
+/**
+ * Comparison page that shows normalized progression pressure across all games.
+ * Normalizes each metric to its 2016 baseline (2016 = 100) and averages by game.
+ */
 export const Comparison = () => {
+  /**
+   * Creates normalized data series for the comparison chart.
+   * For each game:
+   *   1. Gets all metrics for that game
+   *   2. For each metric, normalizes values to 2016 baseline (2016 value = 1.0)
+   *   3. Averages all normalized metrics together
+   *   4. Multiplies by 100 so 2016 = 100
+   * 
+   * Result: Scores above 100 mean the grind is harder than 2016, below 100 means easier.
+   */
   const normalizedSeries = useMemo(() => {
     return timelineYears.map((year) => {
       const row: Record<string, number | string | null> = { year };
       games.forEach((game) => {
+        // Get all metrics for this game
         const gameMetrics = metrics.filter((metric) => metric.gameId === game.id);
         if (!gameMetrics.length) {
           row[game.id] = null;
           return;
         }
+        // Normalize each metric to its 2016 baseline and average them
         const aggregated = gameMetrics.reduce((acc, metric) => {
-          const baseline = metric.values[0]?.value ?? 1;
+          const baseline = metric.values[0]?.value ?? 1; // 2016 value
           const current = metric.values.find((entry) => entry.year === year)?.value ?? baseline;
-          return acc + current / baseline;
+          return acc + current / baseline; // Normalized value (2016 = 1.0)
         }, 0);
+        // Average all metrics and convert to percentage (2016 = 100)
         row[game.id] = Number(((aggregated / gameMetrics.length) * 100).toFixed(1));
       });
       return row;

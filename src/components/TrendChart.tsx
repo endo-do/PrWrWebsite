@@ -9,18 +9,28 @@ import {
   YAxis,
 } from 'recharts';
 
+/**
+ * Props for the TrendChart component.
+ * data: Array of objects, each representing a year with values for each game.
+ *       Format: [{ year: 2016, cs2: 320, lol: 520, ... }, ...]
+ * lines: Array defining which lines to render, with their colors and display names.
+ */
 interface TrendChartProps {
   title: string;
   subtitle?: string;
   unit?: string;
   data: Record<string, number | string | null>[];
   lines: {
-    id: string;
-    color: string;
-    name: string;
+    id: string; // Game ID, used as dataKey to extract values from data objects
+    color: string; // Line color (from game.palette.primary)
+    name: string; // Display name in legend
   }[];
 }
 
+/**
+ * Renders a line chart showing trendlines for multiple games over time.
+ * Uses Recharts library for the visualization.
+ */
 export const TrendChart = ({ title, subtitle, unit, data, lines }: TrendChartProps) => (
   <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl dark:border-white/5 dark:bg-slate-900/60 dark:shadow-glow-lg">
     <header className="mb-4 space-y-1">
@@ -36,19 +46,23 @@ export const TrendChart = ({ title, subtitle, unit, data, lines }: TrendChartPro
     <div className="h-80 w-full">
       <ResponsiveContainer>
         <LineChart data={data}>
+          {/* Grid lines for easier reading */}
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+          {/* X-axis: years */}
           <XAxis
             dataKey="year"
             stroke="rgba(255,255,255,0.45)"
             tickLine={false}
             axisLine={false}
           />
+          {/* Y-axis: metric values */}
           <YAxis
             stroke="rgba(255,255,255,0.45)"
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => Number(value).toLocaleString()}
+            tickFormatter={(value) => Number(value).toLocaleString()} // Format numbers with commas
           />
+          {/* Tooltip shown on hover */}
           <Tooltip
             contentStyle={{
               backgroundColor: '#020617',
@@ -61,15 +75,17 @@ export const TrendChart = ({ title, subtitle, unit, data, lines }: TrendChartPro
               key,
             ]}
           />
+          {/* Legend showing game names and colors */}
           <Legend />
+          {/* Render a line for each game */}
           {lines.map((line) => (
             <Line
               key={line.id}
-              type="monotone"
-              dataKey={line.id}
+              type="monotone" // Smooth curve interpolation
+              dataKey={line.id} // Extracts values from data objects using this key
               stroke={line.color}
               name={line.name}
-              dot={false}
+              dot={false} // No dots on the line
               strokeWidth={2.5}
             />
           ))}

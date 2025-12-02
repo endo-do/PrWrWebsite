@@ -15,6 +15,10 @@ interface GameCardProps {
   accent: string;
 }
 
+/**
+ * Custom tooltip component for the area chart in GameCard.
+ * Shows the year and value when hovering over the chart.
+ */
 const CardTooltip = ({ active, payload }: any) => {
   if (!active || !payload?.length) return null;
   const { year, value } = payload[0].payload;
@@ -26,7 +30,12 @@ const CardTooltip = ({ active, payload }: any) => {
   );
 };
 
+/**
+ * Card component displaying a game's information and metric trend.
+ * Shows a sparkline chart, percentage change, and highlights.
+ */
 export const GameCard = ({ game, metric, accent }: GameCardProps) => {
+  // Calculate percentage change from first to last value
   const first = metric?.values[0]?.value ?? 0;
   const last = metric?.values.at(-1)?.value ?? 0;
   const delta = first ? ((last - first) / first) * 100 : 0;
@@ -48,10 +57,12 @@ export const GameCard = ({ game, metric, accent }: GameCardProps) => {
         </div>
       </header>
 
+      {/* Sparkline chart showing metric trend over time */}
       {metric ? (
         <div className="h-36">
           <ResponsiveContainer>
             <AreaChart data={metric.values}>
+              {/* Gradient definition for the area fill */}
               <defs>
                 <linearGradient id={`spark-${game.id}`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={accent} stopOpacity={0.8} />
@@ -66,7 +77,7 @@ export const GameCard = ({ game, metric, accent }: GameCardProps) => {
                 dataKey="value"
                 stroke={accent}
                 fillOpacity={1}
-                fill={`url(#spark-${game.id})`}
+                fill={`url(#spark-${game.id})`} // Use the gradient defined above
                 strokeWidth={2}
               />
             </AreaChart>

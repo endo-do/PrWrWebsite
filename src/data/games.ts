@@ -7,10 +7,24 @@ import type {
   TimelineEvent,
 } from '../types';
 
+/**
+ * All available metric categories in the system.
+ */
 export const metricCategories: MetricCategory[] = ['money', 'hours', 'difficulty'];
 
+/**
+ * Array of years we track data for: [2016, 2017, ..., 2025]
+ */
 export const timelineYears = Array.from({ length: 10 }, (_, i) => 2016 + i);
 
+/**
+ * Game definitions.
+ * Each game has:
+ * - Basic info (name, icon, studio, description)
+ * - A color palette for UI/charts
+ * - Highlights (key insights)
+ * - An array of metric IDs that belong to this game
+ */
 export const games: Game[] = [
   {
     id: 'cs2',
@@ -20,6 +34,8 @@ export const games: Game[] = [
     description:
       'Skin speculation, operations, and capsule drops now act like a mini stock market for dedicated collectors.',
     heroTagline: 'Skin markets behave like blue-chip stocks.',
+    howItWorks:
+      'CS2 progression revolves around cosmetic skins obtained through cases, operations, and the Steam Community Market. Players open cases with keys (purchased or earned) to get random skins. Rare skins can be traded on the market, where prices fluctuate based on supply, demand, and Valve policy changes. Operations introduce limited-time cases and missions that unlock exclusive skins. The market functions like a real economy—rare items appreciate in value, while common skins remain cheap. Investment-minded players track price trends, buy low during market dips, and sell during spikes.',
     palette: { primary: '#38bdf8', secondary: '#f472b6' },
     highlights: [
       'Iconic skins outperformed S&P 500 in 2020 spike.',
@@ -36,13 +52,15 @@ export const games: Game[] = [
     description:
       'Season resets and LP decay keep Diamond+ players on an endless treadmill of adaptation.',
     heroTagline: 'Grind efficiency matters more than raw skill.',
+    howItWorks:
+      'League of Legends uses a ranked ladder system where players compete in matches to earn League Points (LP). Wins grant LP, losses deduct it. Each rank tier (Iron through Challenger) has four divisions, except Master, Grandmaster, and Challenger which use LP directly. At the end of each season, ranks reset and players must climb again. The system uses MMR (Matchmaking Rating) behind the scenes—if your MMR is higher than your rank, you gain more LP per win. Diamond+ players face LP decay if inactive, forcing constant play. Role queue locks you to a preferred position, improving match quality but requiring proficiency in your chosen role. Meta shifts and champion balance changes constantly reshape what strategies work, making adaptation as important as mechanical skill.',
     palette: { primary: '#38ef7d', secondary: '#06b6d4' },
     highlights: [
       'Season 14 item rework briefly lowered time-to-Diamond.',
       'Role queue rewards top-lane loyalists with faster LP.',
       'Master+ now assumes off-meta champ proficiency.',
     ],
-    metrics: ['lol-hours-diamond', 'lol-difficulty-score'],
+    metrics: ['lol-hours-diamond', 'lol-difficulty-score', 'lol-skin-basket'],
   },
   {
     id: 'clash',
@@ -52,6 +70,8 @@ export const games: Game[] = [
     description:
       'Card evolution, star levels, and banner tokens gradually turned progression into a premium economy.',
     heroTagline: 'Whales set the pace of the arena.',
+    howItWorks:
+      'Clash Royale progression centers on upgrading cards through levels (1-15) using gold and cards collected from chests, challenges, and shop purchases. Players build 8-card decks and battle in real-time matches. The Gold Pass subscription accelerates progression with bonus rewards, chest keys, and exclusive challenges. Card evolutions unlock powerful alternate forms but require evolution shards—rare resources that can be purchased or slowly earned. Champions are the highest rarity cards, locked behind paywalls or extensive grinding. Star levels add cosmetic upgrades and minor stat boosts. The meta constantly shifts with balance updates, forcing players to invest in new cards. Maxing a competitive deck now requires significant time or money, with whales able to instantly unlock new cards while free players grind for months.',
     palette: { primary: '#fbbf24', secondary: '#fb7185' },
     highlights: [
       'Champions and evolutions are now pay-to-rush gateways.',
@@ -68,6 +88,8 @@ export const games: Game[] = [
     description:
       'Each expansion raises the pinnacle power wall, demanding seasonal chores plus flawless activity clears.',
     heroTagline: 'Seasonal chores gate ultimate power.',
+    howItWorks:
+      'Destiny 2 progression follows a seasonal model where each expansion raises the power cap. Players grind activities (strikes, crucible, gambit) to earn gear that increases their Power Level. The pinnacle cap is the maximum achievable through gear, while the artifact provides bonus levels through XP gained from any activity. Each season introduces new activities, weapons, and armor with unique perks. Raids and dungeons offer the best rewards but require high power levels and coordinated teams. Contest mode raids lock power at a specific level, emphasizing skill over grind. The artifact resets each season, forcing players to re-grind bonus levels. Crafting allows players to create "god-roll" weapons with perfect perks, but requires extensive material farming. Seasonal challenges and bounties provide structured progression paths, while endgame activities like Grandmaster Nightfalls and Master raids demand optimized builds and high power levels.',
     palette: { primary: '#a855f7', secondary: '#60a5fa' },
     highlights: [
       'Contest mode raids require meta builds and level cap.',
@@ -78,6 +100,15 @@ export const games: Game[] = [
   },
 ];
 
+/**
+ * All metrics tracked across games.
+ * Each metric:
+ * - Belongs to one game and one category
+ * - Has time-series data (values array with one entry per year)
+ * - Can have optional context notes for notable events
+ * 
+ * Example: "cs2-skin-basket" tracks CS2 skin prices from 2016-2025
+ */
 export const metrics: Metric[] = [
   {
     id: 'cs2-skin-basket',
@@ -129,6 +160,20 @@ export const metrics: Metric[] = [
     values: timelineYears.map((year, idx) => ({
       year,
       value: [52, 58, 63, 61, 66, 72, 78, 81, 75, 70][idx],
+    })),
+  },
+  {
+    id: 'lol-skin-basket',
+    gameId: 'lol',
+    label: 'Premium Skin Basket',
+    category: 'money',
+    unit: 'USD',
+    description:
+      'Average price of a 10-skin basket (Ultimate, Legendary, and Mythic tier skins).',
+    values: timelineYears.map((year, idx) => ({
+      year,
+      value: [520, 580, 640, 620, 720, 780, 850, 920, 980, 1050][idx],
+      context: idx === 6 ? 'Mythic skins introduced premium pricing tier' : undefined,
     })),
   },
   {
@@ -300,16 +345,30 @@ export const timelineEvents: TimelineEvent[] = [
   },
 ];
 
+/**
+ * Helper function: Get a metric by its ID.
+ */
 export const getMetric = (id: string) => metrics.find((metric) => metric.id === id);
 
+/**
+ * Helper function: Get all metrics for a specific game.
+ */
 export const getGameMetrics = (gameId: string) =>
   metrics.filter((metric) => metric.gameId === gameId);
 
+/**
+ * Helper function: Get the value of a metric for a specific year.
+ * Returns null if the metric or year doesn't exist.
+ */
 export const getMetricValue = (metricId: string, year: number) => {
   const metric = getMetric(metricId);
   return metric?.values.find((entry) => entry.year === year)?.value ?? null;
 };
 
+/**
+ * Helper function: Get the minimum and maximum years in our dataset.
+ * Used to set bounds for the year range sliders.
+ */
 export const getYearBounds = () => ({
   min: Math.min(...timelineYears),
   max: Math.max(...timelineYears),

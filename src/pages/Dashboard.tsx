@@ -7,21 +7,37 @@ import { ComparisonPanel } from '../components/ComparisonPanel';
 import { Timeline } from '../components/Timeline';
 import type { MetricCategory } from '../types';
 
+// Get the min/max years from our data (currently 2016-2025)
 const { min, max } = getYearBounds();
 
+/**
+ * Main dashboard page that displays game progression metrics.
+ * Allows users to filter by games, metric category, and year range.
+ */
 export const Dashboard = () => {
+  // State: Which games are currently selected for display
   const [selectedGames, setSelectedGames] = useState<string[]>(games.map((game) => game.id));
+  // State: Which metric category to focus on (money, hours, or difficulty)
   const [metricFocus, setMetricFocus] = useState<MetricCategory>('money');
+  // State: The year range to display in charts [startYear, endYear]
   const [yearRange, setYearRange] = useState<[number, number]>([min, max]);
 
+  /**
+   * Builds the data structure for the trend chart.
+   * Creates an array where each entry represents a year, with values for each selected game.
+   * Format: [{ year: 2016, cs2: 320, lol: null, ... }, { year: 2017, ... }, ...]
+   * Games without data for the selected metric will have null values.
+   */
   const chartPayload = useMemo(() => {
     const years = [];
     for (let year = yearRange[0]; year <= yearRange[1]; year += 1) {
       const entry: Record<string, number | string | null> = { year };
       selectedGames.forEach((gameId) => {
+        // Find the metric for this game and selected category
         const metric = metrics.find(
           (candidate) => candidate.gameId === gameId && candidate.category === metricFocus,
         );
+        // Get the value for this specific year, or null if not found
         const value = metric?.values.find((val) => val.year === year)?.value ?? null;
         entry[gameId] = value;
       });
@@ -30,14 +46,19 @@ export const Dashboard = () => {
     return years;
   }, [selectedGames, metricFocus, yearRange]);
 
+  /**
+   * Determines which games have data available for the currently selected metric and year range.
+   * Used to disable game toggle buttons when they won't show any data in the chart.
+   */
   const gamesWithData = useMemo(() => {
     return games
       .filter((game) => {
+        // Check if this game has a metric for the selected category
         const metric = metrics.find(
           (candidate) => candidate.gameId === game.id && candidate.category === metricFocus,
         );
         if (!metric) return false;
-        // Check if there's at least one data point in the year range
+        // Check if there's at least one data point in the selected year range
         return metric.values.some(
           (val) => val.year >= yearRange[0] && val.year <= yearRange[1] && val.value != null,
         );
@@ -45,15 +66,20 @@ export const Dashboard = () => {
       .map((game) => game.id);
   }, [metricFocus, yearRange]);
 
+  /**
+   * Defines which lines to display in the trend chart.
+   * Only includes games that are both selected AND have data available.
+   * Each line gets its color from the game's palette.
+   */
   const lineDefs = useMemo(() => {
     return selectedGames
       .filter((gameId) => gamesWithData.includes(gameId))
       .map((gameId) => {
         const game = games.find((g) => g.id === gameId)!;
         return {
-          id: gameId,
-          color: game.palette.primary,
-          name: game.name,
+          id: gameId, // Used as the dataKey in the chart
+          color: game.palette.primary, // Line color
+          name: game.name, // Display name in legend
         };
       });
   }, [selectedGames, gamesWithData]);
